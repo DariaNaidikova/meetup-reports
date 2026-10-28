@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Boring Task, Hard Lessons: Building an AI Agent That Works</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; background: #111; color: #eee; font-family: system-ui, sans-serif; overflow: hidden; }
+    .deck { position: relative; width: 100vw; height: calc(100vh - 48px); display: flex; align-items: center; justify-content: center; }
+    .slide { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; }
+    .slide.active { display: flex; }
+    .slide img { max-width: 100%; max-height: 100%; aspect-ratio: 16 / 9; object-fit: contain; }
+    .nav { position: absolute; top: 0; bottom: 0; width: 15%; background: none; border: 0; color: #fff; font-size: 2.5rem; opacity: 0; cursor: pointer; transition: opacity .2s; }
+    .nav:hover, .nav:focus-visible { opacity: .6; }
+    .prev { left: 0; } .next { right: 0; }
+    .bar { height: 48px; display: flex; align-items: center; gap: 12px; padding: 0 16px; background: #1b1b1b; }
+    .progress { flex: 1; height: 4px; background: #333; border-radius: 2px; cursor: pointer; }
+    .progress div { height: 100%; width: 0; background: #4fd1c5; border-radius: 2px; transition: width .2s; }
+    .counter { font-variant-numeric: tabular-nums; min-width: 5em; text-align: right; }
+    .bar button { background: #333; color: #eee; border: 0; border-radius: 4px; padding: 4px 10px; cursor: pointer; }
+    .bar button:hover { background: #444; }
+  </style>
+</head>
+<body>
+  <main class="deck" id="deck">
+    <section class="slide active" aria-label="Slide 1">
+      <img src="slides/slide-01.jpg" alt="Boring Task, Hard Lessons: Building an AI Agent That Works" >
+    </section>
+    <section class="slide" aria-label="Slide 2">
+      <img src="slides/slide-02.jpg" alt="2 Frontend Developer at Semrush @daria-naidikova Daria Naidikova Hello!" >
+    </section>
+    <section class="slide" aria-label="Slide 3">
+      <img src="slides/slide-03.jpg" alt="You might never face this exact task, but you would run into the same agent design traps. Niche Problem, Universal Pitfalls" loading="lazy">
+    </section>
+    <section class="slide" aria-label="Slide 4">
+      <img src="slides/slide-04.jpg" alt="4 Content ➔The task and why email templates hurt ➔Mistakes and lessons ➔Sharing it: the plugin marketplace ➔What I&#x27;d do differently" loading="lazy">
+    </section>
+    <section class="slide" aria-label="Slide 5">
+      <img src="slides/slide-05.jpg" alt="Raise your hand if you’ve ever had to develop an email template." loading="lazy">
+    </section>
+    <section class="slide" aria-label="Slide 6">
+      <img src="slides/slide-06.jpg" alt="6 Email Templates: 10% Coding, 90% Emotional Damage" loading="lazy">
+    </section>
+    <section class="slide" aria-label="Slide 7">
+      <img src="slides/slide-07.jpg" alt="Living in 2026, Coding Like It’s 2000" loading="lazy">
+    </section>
+    <section class="slide" aria-label="Slide 8">
+      <img src="slides/slide-8.jpg" alt="8 The Solution React + MJML ➔ Develop email templates as React components ➔ Our internal react-mjml package" loading="lazy">
+    </section>
+    <section class="slide" aria-label="Slide 9">
+      <img src="slides/slide-09.jpg" alt="Migrate old HTML email templates to React + MJML The Task" loading="lazy">
+    </section>
+    <section class="slide" aria-label="Slide 10">
+      <img src="slides/slide-10.jpg" alt="10 The Task Migrate old HTML email templates to React + MJML Over a thousand lines per template 02 Own variable logic per template 03 Strict new validation rules 01" loading="lazy">
+    </section>
+    <section class="slide" aria-label="Slide 11">
+      <img src="slides/slide-11.jpg" alt="11 Sounds like a job for an agent!" loading="lazy">
+    </section>
+    <section class="slide" aria-label="Slide 12">
+      <img src="slides/slide-12.jpg" alt="I got it wrong twice before I got it right. 2 mistakes" loading="lazy">
+    </section>
+    <section class="slide" aria-label="Slide 14">
+      <img src="slides/slide-14.jpg" alt="A few examples are not enough context Mistake 1" loading="lazy">
+    </section>
+    <section class="slide" aria-label="Slide 15">
+      <img src="slides/slide-15.jpg" alt="15 15 Why It Failed Examples covered ~20% of real cases The agent hallucinated on anything it hadn&#x27;t seen. ➔Missing: validation ➔Missing: variable-binding patterns ➔Missing: component variety" loading="lazy">
+    </section>
+    <section class="slide" aria-label="Slide 16">
+      <img src="slides/slide-16.jpg" alt="16 16 The Fix Purpose-built reference docs ➔Separate doc: validation rules ➔Separate doc: variable / binding logic ➔Component docs: props, use cases, correct output" loading="lazy">
+    </section>
+    <section class="slide" aria-label="Slide 17">
+      <img src="slides/slide-17.jpg" alt="Docs written for the agent&#x27;s job beat examples borrowed from elsewhere. The Lesson Concrete ≠ complete" loading="lazy">
+    </section>
+    <section class="slide" aria-label="Slide 18">
+      <img src="slides/slide-18.jpg" alt="Raise your hand if you think one agent is not enough." loading="lazy">
+    </section>
+    <section class="slide" aria-label="Slide 19">
+      <img src="slides/slide-19.jpg" alt="19 One Agent, One Task: HTML to MJML Except it was never just one task. 01 Variable Extraction 02 Component Mapping 03 Dependency Check 04 Template Validation Semrush conﬁdential" loading="lazy">
+    </section>
+    <section class="slide" aria-label="Slide 20">
+      <img src="slides/slide-20.jpg" alt="20 20 The Monolith Trap What happens when one agent carries the entire pipeline. ➔Expensive &amp; Slow Iteration ➔Black-Box Debugging ➔Cascading Fragility ➔The Prompt Audit Nightmare When one agent tries to do everything, you end up with an unmaintainable Frankenstein." loading="lazy">
+    </section>
+    <section class="slide" aria-label="Slide 21">
+      <img src="slides/slide-21.jpg" alt="One skill, one job—built to run, evaluate, and debug in total isolation. Slicing the Monolith" loading="lazy">
+    </section>
+    <section class="slide" aria-label="Slide 22">
+      <img src="slides/slide-22.jpg" alt="22 22 The Fix Split into skills ➔Every skill can be used and tested independently from the agent ➔Orchestrator agent: just sequences the skills" loading="lazy">
+    </section>
+    <section class="slide" aria-label="Slide 23">
+      <img src="slides/slide-23.jpg" alt="23 23 Proof Point The validation skill Fastest way to trust the agent&#x27;s output without manually testing every template. ➔One job: check output against structural rules, ﬁx violations ➔Runs last, in its own isolated context" loading="lazy">
+    </section>
+    <section class="slide" aria-label="Slide 24">
+      <img src="slides/slide-24.jpg" alt="24 24 Skill vs. Agent The rule Writing &quot;how-to&quot; steps inside the orchestrator is the signal it should be its own skill. ➔Use an agent when you need its own role, tools, model or isolated context. ➔Self-contained, independently testable logic → it&#x27;s a skill" loading="lazy">
+    </section>
+    <section class="slide" aria-label="Slide 25">
+      <img src="slides/slide-25.jpg" alt="Ship it as a plugin. Why Publish It" loading="lazy">
+    </section>
+    <section class="slide" aria-label="Slide 26">
+      <img src="slides/slide-26.jpg" alt="26 26 Marketplace Structure What a marketplace repo looks like ➔Standard install ﬂow ➔One source of truth ➔Versioning and changelog ➔One repo, many plugins ➔Each plugin is self-contained" loading="lazy">
+    </section>
+    <section class="slide" aria-label="Slide 28">
+      <img src="slides/slide-28.jpg" alt="What I&#x27;d Do Differently." loading="lazy">
+    </section>
+    <section class="slide" aria-label="Slide 30">
+      <img src="slides/slide-30.jpg" alt="30 Write the spec ﬁrst, let the AI build from it Spec-Driven Development ➔Why it&#x27;s good: mistakes get ﬁxed in a short document, not in generated code ➔The spec says what the system should do — it becomes the source of truth, not the chat promp ➔Why it&#x27;s good: small, veriﬁable tasks and testable acceptance criteria keep the agent on track" loading="lazy">
+    </section>
+    <section class="slide" aria-label="Slide 31">
+      <img src="slides/slide-31.jpg" alt="The spec is the planning that saves the debugging." loading="lazy">
+    </section>
+    <section class="slide" aria-label="Slide 32">
+      <img src="slides/slide-32.jpg" alt="Thank you" loading="lazy">
+    </section>
+    <button class="nav prev" aria-label="Previous slide">&#10094;</button>
+    <button class="nav next" aria-label="Next slide">&#10095;</button>
+  </main>
+  <footer class="bar">
+    <button id="fs" title="Fullscreen (F)">Fullscreen</button>
+    <div class="progress" id="progress"><div></div></div>
+    <span class="counter" id="counter"></span>
+  </footer>
+  <script>
+    const slides = [...document.querySelectorAll('.slide')];
+    const counter = document.getElementById('counter');
+    const bar = document.querySelector('#progress div');
+    let cur = 0;
+    function show(n) {
+      cur = Math.max(0, Math.min(slides.length - 1, n));
+      slides.forEach((s, i) => s.classList.toggle('active', i === cur));
+      counter.textContent = (cur + 1) + ' / ' + slides.length;
+      bar.style.width = ((cur + 1) / slides.length * 100) + '%';
+      history.replaceState(null, '', '#' + (cur + 1));
+    }
+    const next = () => show(cur + 1), prev = () => show(cur - 1);
+    document.querySelector('.next').onclick = next;
+    document.querySelector('.prev').onclick = prev;
+    document.getElementById('progress').onclick = e => {
+      const r = e.currentTarget.getBoundingClientRect();
+      show(Math.floor((e.clientX - r.left) / r.width * slides.length));
+    };
+    document.getElementById('fs').onclick = toggleFs;
+    function toggleFs() { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); }
+    document.addEventListener('keydown', e => {
+      if (['ArrowRight', 'PageDown', ' '].includes(e.key)) { e.preventDefault(); next(); }
+      else if (['ArrowLeft', 'PageUp'].includes(e.key)) { e.preventDefault(); prev(); }
+      else if (e.key === 'Home') show(0);
+      else if (e.key === 'End') show(slides.length - 1);
+      else if (e.key === 'f' || e.key === 'F') toggleFs();
+    });
+    let tx = null;
+    document.addEventListener('touchstart', e => tx = e.touches[0].clientX);
+    document.addEventListener('touchend', e => {
+      if (tx === null) return;
+      const dx = e.changedTouches[0].clientX - tx;
+      if (Math.abs(dx) > 50) dx < 0 ? next() : prev();
+      tx = null;
+    });
+    show((parseInt(location.hash.slice(1)) || 1) - 1);
+  </script>
+</body>
+</html>
